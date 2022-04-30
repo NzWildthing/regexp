@@ -86,9 +86,6 @@ public class REcompile{
                 //Don't need to save start state here as it will not be the start state of the machine
                 expression();
             }
-            else{
-                error();
-            }
         }
         //Otherwise reached end of regex 
         //Returns start state of the machine
@@ -157,7 +154,38 @@ public class REcompile{
                }
             }
             //1 or many, +
-            //else if(regex.charAt(pointer) == '+')
+            else if(regex.charAt(pointer) == '+'){
+                //Creates a branching state that allows for either going back to the plus or consuming it and 
+                //continuing parsing 
+                start = setState(state, "br", f1, state + 1);
+                pointer++;
+                state++;
+            }
+            //Alternation either one or the other r|e
+            else if(regex.charAt(pointer) == '|'){
+                //Creates a new branching machine with either the previous factor or the next 
+                setState(state, "br", f1, state + 1);
+
+                //Sets the starting state of the alternation to point to our new alternating branch 
+                updateState(f1 - 1, type.get(f1-1), state, state);
+
+                pointer++;
+                state++;
+
+                //Gets the term that is in alternation F|T 
+                f2 = term();
+
+                //Adjust previous state values 
+                if(type.get(prev) == "br"){
+                    updateState(prev, type.get(prev), next1.get(prev), state);
+                }
+                else{
+                    updateState(prev, type.get(prev), state, state);
+                }
+
+                //Updates the value of the start state 
+                start = f2 - 1;
+            }
         }
 
         return start;
