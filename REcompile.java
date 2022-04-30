@@ -1,5 +1,6 @@
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.naming.InitialContext;
 
@@ -68,7 +69,7 @@ public class REcompile{
         next2.set(0, startState);
 
         //Sets the final state
-        setState(state, "final", state, state);
+        setState(state, "final", -1, -1);
 
         //Prints out the fsm to the console
         print();
@@ -96,35 +97,67 @@ public class REcompile{
 
     public static int term(){
         //Setup some variables
-        int start, branch1, branch2, prev;
-        start = branch1 = factor();
+        int start, f1, f2, prev;
+        start = f1 = factor();
         //Last state built 
         prev = state - 1;
 
         //Make sure wer havn't finished parsing
         if(pointer < regex.length()){
-            //Checks first prescendence closure 
+            //0 or many, closure *
             if(regex.charAt(pointer) == '*'){
-                //Create a branching state on of them is the state returned from factor, the other is the next 
-                //Final state of branching machine will already be assumed by factor to be the next machine craeted 
-                start = setState(state, "br", state, state +1);
-                pointer++;
-                state++;
+                    //Creates a temporary state
+                    int temp = state - 2;
+    
+                    //Creates a preceding branching state
+                    setState(state, "br", f1, state + 1);
+    
+                    //Adjusts previous state values 
+                    if (type.get(temp) == "br") {
+                        updateState(temp, type.get(temp), next1.get(temp), state);
+                        pointer++;
+                        start = state;
+                        state++;
+                    } //else if (isLiteral((type.get(temp)).charAt(0)) || Arrays.asList(operators).contains(type.get(temp)))
+                    //Otherwise its a literal and needs to be directed to the branching state we created  
+                    else{ 
+                        updateState(temp, type.get(temp), state, state);
+                        pointer++;
+                        start = state;
+                        state++;
+                    }
             }
+            //0 or 1, ?
             else if(regex.charAt(pointer) == '?'){
-                //If previous machine was not branching set its pointers to this machine
-                if(next1.get(prev) == next2.get(prev))
-                {
-                    next1.set(prev, state);
-                    next2.set(prev, state);
-                }
-                else{
-                    //Otherwise just change one pointer to this machine
-                    next1.set(prev, state);
-                }
-                //Create a new branching machine pointing to the factor 
-                start = setState(state, "br", branch1, state +1);
+               //Stores the previous state again 
+               int temp = state - 2;
+
+               //Creates a preceding branching state
+               setState(state, "br", f1, state + 1);
+
+               //Adjusts previous state values 
+               if(type.get(temp) == "br") {
+                   //Adjusts both previous states, so that it reflects the question mark 
+                   //rules of 0 or 1, so either skip the preceding character or consume it
+                   updateState(temp, type.get(temp), next1.get(temp), state); 
+                   updateState(prev, type.get(prev), state + 1, state + 1); 
+                   pointer++;
+                   start = state;
+                   state++;
+               }
+               //Otherwise its a literal and needs to be attached to the branching state we created 
+                else {
+                   //Either one and continue parsing 
+                   updateState(temp, type.get(temp), state, state);
+                   //Or none and continue parsing 
+                   updateState(prev, type.get(prev), state + 1, state + 1); 
+                   pointer++;
+                   start = state;
+                   state++;
+               }
             }
+            //1 or many, +
+            //else if(regex.charAt(pointer) == '+')
         }
 
         return start;
@@ -216,10 +249,19 @@ public class REcompile{
 
     //Sets the state of the machine
     private static int setState(int s, String c, int n1, int n2) {
-        stateL.add(s);
-        type.add(c);
-        next1.add(n1);
-        next2.add(n2);
+        stateL.add(s, s);
+        type.add(s, c);
+        next1.add(s, n1);
+        next2.add(s,n2);
+        return s;
+    }
+
+    //Updates the state of the machine
+    private static int updateState(int s, String c, int n1, int n2) {
+        stateL.set(s, s);
+        type.set(s, c);
+        next1.set(s, n1);
+        next2.set(s,n2);
         return s;
     }
 

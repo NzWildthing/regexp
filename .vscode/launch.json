@@ -9,7 +9,7 @@
             "name": "Launch with Arguments Prompt",
             "request": "launch",
             "mainClass": "",
-            "args": "abra*[cd]noot}"
+            "args": "abra*[cd]no?ot"
         },
         {
             "type": "java",
