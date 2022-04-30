@@ -1,4 +1,7 @@
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
+
+import javax.naming.InitialContext;
 
 /*
 Brogan Jowers-Wilding   1538252
@@ -31,11 +34,12 @@ public class REcompile{
     private static String regex = "";
     private static int pointer; 
     private static int state; 
+    private static ArrayList<Integer> stateL = new ArrayList<>() {}; 
     private static ArrayList<String> type = new ArrayList<>(); 
     private static ArrayList<Integer> next1 = new ArrayList<>();
     private static ArrayList<Integer> next2 = new ArrayList<>();
 
-    private static char[] operators = {'*', '(', ')', '+', '?', '[', ']'};
+    private static char[] operators = {'*', '(', ')', '+', '?'};
 
     public static void main(String[] args){
         //Takes the regular expression as input 
@@ -52,6 +56,9 @@ public class REcompile{
         //Sets the pointer and start state
         pointer = 0; 
         state = 1;
+
+        //Sets the intial state to be empty 
+        setState(0, "initial", 0, 0);
 
         //Begins parsing the regex 
         startState = expression();
@@ -82,9 +89,7 @@ public class REcompile{
                 error();
             }
         }
-        else{
-            error();
-        }
+        //Otherwise reached end of regex 
         //Returns start state of the machine
         return start;
     }
@@ -102,7 +107,7 @@ public class REcompile{
             if(regex.charAt(pointer) == '*'){
                 //Create a branching state on of them is the state returned from factor, the other is the next 
                 //Final state of branching machine will already be assumed by factor to be the next machine craeted 
-                start = setState(state, "br", branch1, state +1);
+                start = setState(state, "br", state, state +1);
                 pointer++;
                 state++;
             }
@@ -110,10 +115,13 @@ public class REcompile{
                 //If previous machine was not branching set its pointers to this machine
                 if(next1.get(prev) == next2.get(prev))
                 {
+                    next1.set(prev, state);
                     next2.set(prev, state);
                 }
-                //Otherwise just change one pointer to this machine
-                next1.set(prev, state);
+                else{
+                    //Otherwise just change one pointer to this machine
+                    next1.set(prev, state);
+                }
                 //Create a new branching machine pointing to the factor 
                 start = setState(state, "br", branch1, state +1);
             }
@@ -208,6 +216,7 @@ public class REcompile{
 
     //Sets the state of the machine
     private static int setState(int s, String c, int n1, int n2) {
+        stateL.add(s);
         type.add(c);
         next1.add(n1);
         next2.add(n2);
@@ -217,12 +226,13 @@ public class REcompile{
     //Prints out an error to the user when the regex is invalid
     private static void error() {
 		System.err.println("Input a valid regexp");
+        throw new InvalidParameterException("Input a valid regexp");
 	}
 
     private static void print(){
         int count = 0;
         while(count != type.size()){
-            System.out.println(type.get(count) + " "  + " " + next1.get(count) + " " + next2.get(count));
+            System.out.println(stateL.get(count) + " " + type.get(count) + " "  + " " + next1.get(count) + " " + next2.get(count));
             count ++;
         }
     }
