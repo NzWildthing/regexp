@@ -166,13 +166,14 @@ public class REcompile{
                 //Creates a new branching machine with either the previous factor or the next 
                 setState(state, "br", f1, state + 1);
 
-                //Sets the starting state of the alternation to point to our new alternating branch 
+                //Sets the starting place of the alternation to point to our new alternating branch 
                 updateState(f1 - 1, type.get(f1-1), state, state);
 
                 pointer++;
                 state++;
 
-                //Gets the term that is in alternation F|T 
+                //Gets the term that is in alternation F|T the T
+                //Factor is created and will have both pointers to the next state after the alternation 
                 f2 = term();
 
                 //Adjust previous state values 
@@ -180,6 +181,8 @@ public class REcompile{
                     updateState(prev, type.get(prev), next1.get(prev), state);
                 }
                 else{
+                    //Updates the first factors state to point to after the alternation so that if 
+                    //chosen out of the two options the program will jump past the consumed alternation
                     updateState(prev, type.get(prev), state, state);
                 }
 
