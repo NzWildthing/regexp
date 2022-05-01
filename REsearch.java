@@ -2,6 +2,8 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
+
+
 class REsearch {
             //parent varible
             private static int parentState;
@@ -13,33 +15,33 @@ class REsearch {
  
 
     public static void main(String[] args) {
-		try {
-            //if valid arg input
-			if (args.length != 1) {
-				System.err.println("");
-				return;
-			}
+		//try {
+        //if valid arg input
+        if (args.length != 1) {
+            System.err.println("please use: java REsearch <filename>");
+            return;
+        }
+        /*
         }
         catch (Exception e){
             System.err.println(e);
         }    
-        
-        String line;
-        String[] split;
+        */
+        //declearing variables
+        String[] split = new String [3];
         String filename = args[0];
         ArrayList<String> fileString = new ArrayList<>();
-        
+        System.err.println("zzz");
         // Read standard input to populate the FSM arrays
-        try {
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-            line = reader.readLine();
+            String line = reader.readLine();
             int counter = 0;
 
             while (line != null) {
-                ///CHECKINPUT
-                split = line.split(" ");
+
+                split = line.split("\\s+");
+                System.out.println(split[2]);
                 stateNum.add(Integer.parseInt(split[0]));
                 ch.add(split[1].charAt(0));
                 next1.add(Integer.parseInt(split[2]));
@@ -50,15 +52,14 @@ class REsearch {
             }
         } 
         catch (Exception e) {
-            System.err.println("Invalid piped in FSM file");
-
+            System.err.println("Invalid piped in FSM file. Try again");
             e.printStackTrace();
         }
+        System.err.println("yyy");
 
-
-        try{
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
-            line = reader.readLine();
+        try(BufferedReader reader = new BufferedReader(new FileReader(filename))){
+            
+            String line = reader.readLine();
             
             // While there are still lines to read from the file
 
@@ -84,11 +85,7 @@ class REsearch {
         catch (Exception e) {
             System.err.println(e);
         } 
-        System.err.println("---------------------------------------");
-        System.err.println(stateNum);
-        System.err.println(ch);
-        System.err.println(next1);
-        System.err.println(next2);
+        System.err.println("xxx");
         //iterate through each of the lines
         for (String nextLine : fileString) {
             //create counters
@@ -98,11 +95,12 @@ class REsearch {
             parentState = next1.get(state);
             //serach fsm and return true if found
             if (searchLine(next1.get(state), nextLine, symbol)) {
-            //if true print 
-            System.out.println(nextLine);
+                //if true print 
+                System.out.println(nextLine);
             } 
         }
     }
+    
 
     //serach used regressivly 
     public static boolean searchLine(int state, String line, int symbol)
