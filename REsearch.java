@@ -96,15 +96,15 @@ class REsearch {
             int symbol = 0;
 
             parentState = next1.get(state);
-            //call the do the thing to recursively search the fsm
+            //serach fsm and return true if found
             if (searchLine(next1.get(state), nextLine, symbol)) {
-            //if it returns true meaning the line has what is being searched for, print the line
+            //if true print 
             System.out.println(nextLine);
             } 
         }
     }
 
-    //////
+    //serach used regressivly 
     public static boolean searchLine(int state, String line, int symbol)
     {
         //if the end of the fsm is reached it means it won so return true
