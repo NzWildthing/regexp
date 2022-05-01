@@ -28,18 +28,22 @@ class REsearch {
         }    
         */
         //declearing variables
-        String[] split = new String [3];
+        String line = " ";
+        String[] split;
         String filename = args[0];
         ArrayList<String> fileString = new ArrayList<>();
         System.err.println("zzz");
+        
         // Read standard input to populate the FSM arrays
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-
-            String line = reader.readLine();
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            System.err.println("ccc");
+            line = reader.readLine();
+            System.out.println(line);
             int counter = 0;
 
             while (line != null) {
-
+                System.err.println("c");
                 split = line.split("\\s+");
                 System.out.println(split[2]);
                 stateNum.add(Integer.parseInt(split[0]));
@@ -59,7 +63,7 @@ class REsearch {
 
         try(BufferedReader reader = new BufferedReader(new FileReader(filename))){
             
-            String line = reader.readLine();
+            line = reader.readLine();
             
             // While there are still lines to read from the file
 
