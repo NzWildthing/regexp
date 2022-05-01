@@ -9,7 +9,7 @@
             "name": "Launch with Arguments Prompt",
             "request": "launch",
             "mainClass": "",
-            "args": "(a|b)ra[cd]n\\*o(ot)+"
+            "args": "(a|b)r)a[cd]n\\*o(ot)+"
         },
         {
             "type": "java",

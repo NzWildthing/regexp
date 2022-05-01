@@ -64,6 +64,11 @@ public class REcompile{
         //Begins parsing the regex 
         startState = expression();
 
+        //Makes sure that the entire regex has been consumed 
+        if(pointer < regex.length()){
+            error();
+        }
+
         //Sets the start state of the machine
         next1.set(0, startState);
         next2.set(0, startState);
